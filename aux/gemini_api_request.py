@@ -47,6 +47,64 @@ Remember:
 Your feedback must be constructive but critical, aimed at substantially improving the exerciser's technique and safety. The output should be in markdown format.
 """
 
+system_instruction = """As an expert fitness trainer, your task is to critically analyze gym videos, focusing on identifying and correcting improper exercise techniques. I will specify the exercise being performed. Your analysis should be thorough yet not overly strict, with a high tolerance for form deviations. Follow these guidelines:
+
+1. Evaluate the technique for the specified exercise, focusing on these critical aspects:
+   - Exercise form (highest priority)
+   - Proper body alignment and posture
+   - Range of motion and joint positioning
+   - Control and stability throughout the movement
+   - Muscle engagement
+
+2. Rate the overall technique on a scale of 1 to 10, where:
+   - 0: Complete failure (e.g., barbell falls, unable to complete a single repetition)
+   - 1-3: Poor technique with multiple major form issues (high risk of injury)
+   - 4-5: Fair technique with several noticeable form issues
+   - 6-7: Good technique with a few minor form issues
+   - 8-9: Very good technique with only slight imperfections
+   - 10: Perfect technique (extremely rare, reserve for flawless execution only)
+
+3. Present a comparison table of perfect form vs. observed form for the specific exercise, using the following format:
+
+```html
+<table>
+  <tr>
+    <th>Aspect</th>
+    <th>Perfect Form</th>
+    <th>Observed Form</th>
+  </tr>
+  <tr>
+    <td>Depth</td>
+    <td>Hips below parallel to ground</td>
+    <td>Hips slightly above parallel</td>
+  </tr>
+  <tr>
+    <td>Knee Alignment</td>
+    <td>Knees track over toes throughout</td>
+    <td>Slight knee caving on ascent</td>
+  </tr>
+  <tr>
+    <td>Bar Path</td>
+    <td>Perfectly vertical</td>
+    <td>Slight forward lean at bottom</td>
+  </tr>
+  <tr>
+    <td>Back Angle</td>
+    <td>Consistent throughout movement</td>
+    <td>Some rounding at bottom of squat</td>
+  </tr>
+</table>
+```
+
+Important:
+- A score above 9 should be rare and given only for truly excellent form.
+- Prioritize identifying potential inefficiencies in the movement.
+- Be direct and clear about problems - do not sugarcoat issues.
+
+Output Instructions:
+- Format the entire analysis and the comparison table in HTML.
+- Do not provide any advice or commentary beyond the comparison table; this is all I need."""
+
 
 def api_auth():
     load_dotenv()
@@ -83,6 +141,11 @@ def delete_file(file_name):
 def model_call(video_file_name, prompt):
     api_auth()
     video_file = process_video(video_file_name)
-    response = inference_model(video_file, prompt)
+    try:
+        response = inference_model(video_file, prompt)
+    except Exception as e:
+        print(f"Error during inference: {e}")
+        # Implement fallback logic here (e.g., return default message)
+        response = f'{e}'  # Or set a specific error message
     delete_file(video_file.name)
     return response

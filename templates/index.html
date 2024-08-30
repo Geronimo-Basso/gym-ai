@@ -42,7 +42,7 @@
                                 <svg class="w-5 h-5 mr-2 text-secondary" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>
-                                Use MP4 or MOV format for best compatibility
+                                Use MP4 format for best compatibility
                             </li>
                             <li class="flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-secondary" fill="currentColor" viewBox="0 0 20 20">
@@ -113,9 +113,9 @@
                                 </button>
                             </form>
                             {% if analysis_result %}
-                            <h2>Analysis Result:</h2>
-                            <p>{{ analysis_result }}</p>
+                            <div>{{ analysis_result|safe }}</div>
                             {% endif %}
+                    </div>
                     <div id="result" class="hidden p-8 bg-gray-50">
                         <h3 class="text-2xl font-semibold mb-4 text-primary">Analysis Result</h3>
                         <div id="analysis-text" class="p-4 bg-white rounded-md shadow-inner text-lg leading-relaxed"></div>
