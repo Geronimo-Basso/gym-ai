@@ -128,15 +128,22 @@
             </div>
         </footer>
     </div>
-
     <script>
         document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Here you would typically send the file to your server
-            // For demonstration, we'll just show a mock result
-            const exercise = document.getElementById('exercise').value;
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('analysis-text').textContent = `Analysis for ${exercise}: Great form! Your depth is excellent, but try to keep your back a bit straighter at the bottom of the movement.`;
+            e.preventDefault();  // Prevent the form from submitting normally
+
+            const formData = new FormData(this);
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').classList.remove('hidden');
+                document.getElementById('analysis-text').textContent = data.analysis_result;
+            })
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

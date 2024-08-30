@@ -1,26 +1,9 @@
 import os
 import time
-import markdown
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv()
-genai.configure(api_key=os.getenv('API_KEY'))
-
-video_file_name = "../static/videos/bench press.mp4"
-print(f"Uploading file...")
-video_file = genai.upload_file(path=video_file_name)
-print(f"Completed upload: {video_file.uri}")
-
-while video_file.state.name == "PROCESSING":
-    print('.', end='')
-    time.sleep(10)
-    video_file = genai.get_file(video_file.name)
-
-if video_file.state.name == "FAILED":
-    raise ValueError(video_file.state.name)
-
-prompt = """
+system_instruction = """
 As an expert fitness trainer, your task is to critically analyze gym videos, focusing on identifying and correcting improper exercise technique. I will specify the exercise being performed. Your analysis should be strict, with a low tolerance for form deviations. Follow these guidelines:
 
 1. Evaluate the technique for the specified exercise, focusing on these critical aspects:
@@ -64,23 +47,42 @@ Remember:
 Your feedback must be constructive but critical, aimed at substantially improving the exerciser's technique and safety. The output should be in markdown format.
 """
 
-model = genai.GenerativeModel(model_name="gemini-1.5-pro", system_instruction=prompt)
 
-print("Making LLM inference request...")
+def api_auth():
+    load_dotenv()
+    genai.configure(api_key=os.getenv('API_KEY'))
 
-exercise_name = "bench press"
-response = model.generate_content([video_file, exercise_name],
-                                  request_options={"timeout": 600})
 
-print(markdown.markdown(response.text))
+def process_video(video_file_path):
+    print(f"Uploading file...")
+    video_file = genai.upload_file(path=video_file_path)
+    print(f"Completed upload: {video_file.uri}")
 
-# List all files
-for file in genai.list_files():
-    print(f"{file.display_name}, URI: {file.uri}")
-    # Delete file
-    genai.delete_file(file.name)
+    while video_file.state.name == "PROCESSING":
+        print('.', end='')
+        time.sleep(10)
+        video_file = genai.get_file(video_file.name)
+
+    if video_file.state.name == "FAILED":
+        raise ValueError(video_file.state.name)
+
+    return video_file
+
+def inference_model(video_file, prompt):
+    model = genai.GenerativeModel(model_name="gemini-1.5-pro", system_instruction=system_instruction)
+    print("Making LLM inference request...")
+    response = model.generate_content([video_file, prompt],
+                                      request_options={"timeout": 600})
+    return response.text
+
+def delete_file(file_name):
+    file = genai.get_file(file_name)
+    genai.delete_file(file)
     print(f'Deleted file {file.uri}')
 
-# List all files
-for file in genai.list_files():
-    print(f"{file.display_name}, URI: {file.uri}")
+def model_call(video_file_name, prompt):
+    api_auth()
+    video_file = process_video(video_file_name)
+    response = inference_model(video_file, prompt)
+    delete_file(video_file.name)
+    return response
