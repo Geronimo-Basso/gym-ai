@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym.AI - Video Analysis for Fitness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-600">Gym.AI</h1>
+            <p class="text-xl text-gray-600">AI-Powered Fitness Video Analysis</p>
+        </header>
+        
+        <main class="flex flex-col md:flex-row gap-8">
+            <!-- Left Section -->
+            <section class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">About Gym.AI</h2>
+                <p class="mb-4">Gym.AI uses advanced AI to analyze your workout videos and provide personalized feedback to improve your form and technique.</p>
+                
+                <h3 class="text-xl font-semibold mb-2">Best Practices for Video Upload</h3>
+                <ul class="list-disc list-inside mb-4">
+                    <li>Use MP4 format for best compatibility</li>
+                    <li>Keep videos between 30 seconds to 2 minutes</li>
+                    <li>Ensure good lighting and a clear view of your full body</li>
+                    <li>Specify the exercise you're performing for accurate analysis</li>
+                </ul>
+
+                <div class="flex mb-4">
+                    <div class="relative">
+                        <img src="{{ url_for('static', filename='images/correct-form.png') }}" alt="Example of good video" class="rounded-md w-[500px] h-[450px] object-cover border-4 border-green-500">
+                        <svg class="absolute top-2 right-2 w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div class="relative">
+                        <img src="{{ url_for('static', filename='images/incorrect-form.png') }}" alt="Example of bad video" class="rounded-md w-[500px] h-[450px] object-cover border-4 border-red-500">
+                        <svg class="absolute top-2 right-2 w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                </div>
+
+            </section>
+            
+            <!-- Right Section -->
+            <section class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">Upload Your Video</h2>
+                <form action="/analyze" method="post" enctype="multipart/form-data" class="space-y-4">
+                    <div>
+                        <label for="exercise" class="block text-sm font-medium text-gray-700">Exercise Name:</label>
+                        <input type="text" id="exercise" name="exercise" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                               placeholder="e.g., Squat, Deadlift, Bench Press">
+                    </div>
+                    <div>
+                        <label for="video" class="block text-sm font-medium text-gray-700">Select video file:</label>
+                        <input type="file" id="video" name="video" accept="video/*" required
+                               class="mt-1 block w-full text-sm text-gray-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:bg-blue-50 file:text-blue-700
+                                      hover:file:bg-blue-100">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">Analyze Video</button>
+                </form>
+                
+                <div id="result" class="mt-8 p-4 bg-gray-50 rounded-md hidden">
+                    <h3 class="text-xl font-semibold mb-2">Analysis Result</h3>
+                    <p id="analysis-text">Your analysis will appear here after uploading a video.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here you would typically send the file to your server
+            // For demonstration, we'll just show a mock result
+            const exercise = document.getElementById('exercise').value;
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('analysis-text').textContent = `Analysis for ${exercise}: Great form! Your depth is excellent, but try to keep your back a bit straighter at the bottom of the movement.`;
+        });
+    </script>
+</body>
+</html>
