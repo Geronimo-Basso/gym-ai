@@ -146,6 +146,6 @@ def model_call(video_file_name, prompt):
     except Exception as e:
         print(f"Error during inference: {e}")
         # Implement fallback logic here (e.g., return default message)
-        response = f'{e}'  # Or set a specific error message
+        response = 'Internal error, please try again.'  # Or set a specific error message
     delete_file(video_file.name)
     return response
